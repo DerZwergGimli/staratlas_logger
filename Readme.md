@@ -1,3 +1,9 @@
+[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
+[![deploy](https://github.com/DerZwergGimli/staratlas_logger/actions/workflows/docker-image.yml/badge.svg)](https://github.com/DerZwergGimli/staratlas_logger/actions/workflows/docker-image.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![badge_docker_pulls](https://badgen.net/docker/pulls/derzwerggimli/staratlas-logger)
+![badge_docker_size](https://badgen.net/docker/size/derzwerggimli/staratlas-logger)
+
 # StarAtlas GM Logger
 
 This tool is used to log tx from the StarAtlasGM to a MongoDB Database.
