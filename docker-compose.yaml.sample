@@ -1,0 +1,46 @@
+version: "3.7"
+
+services:
+  loop:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    #image: skullandbonesdao/rogue_api:latest
+    restart: unless-stopped
+    environment:
+      MODE: LOOP
+      MONGOURL: 'XXXXXXX'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+  sync:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    #image: skullandbonesdao/rogue_api:latest
+    restart: unless-stopped
+    environment:
+      MODE: SYNC
+      MONGOURL: 'XXXXXXX'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+  retry:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    #image: skullandbonesdao/rogue_api:latest
+    restart: unless-stopped
+    environment:
+      MODE: RETRY
+      MONGOURL: 'XXXXXXX'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+
+
+

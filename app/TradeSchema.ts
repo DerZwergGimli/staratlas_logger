@@ -1,8 +1,8 @@
 import mongoose, { Schema } from 'mongoose';
 
 const exchangeSchema = new Schema({
+  signature: { type: String, unique: true },
   timestamp: Number,
-  signature: String, // String is shorthand for {type: String}
   assetMint: String,
   currencyMint: String,
   orderTaker: String,

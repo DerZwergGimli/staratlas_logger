@@ -1,8 +1,8 @@
 import mongoose, { Schema } from 'mongoose';
 
 const parseErrorSchema = new Schema({
+  signature: { type: String, unique: true },
   timestamp: Number,
-  signature: String,
 });
 
 export const ParseError = mongoose.model(
