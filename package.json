@@ -18,7 +18,8 @@
     "@sonarwatch/solana-transaction-parser": "^1.0.2",
     "@staratlas/factory": "^0.4.4",
     "bn.js": "^4.5.2",
-    "mongoose": "^6.9.2"
+    "mongoose": "^6.9.2",
+    "prettier": "^2.8.4"
   },
   "devDependencies": {
     "typescript": "^4.9.5"
