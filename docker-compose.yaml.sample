@@ -2,10 +2,10 @@ version: "3.7"
 
 services:
   loop:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    #image: skullandbonesdao/rogue_api:latest
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+    image: skullandbonederzwerggimli/staratlas-logger:latest
     restart: unless-stopped
     environment:
       MODE: LOOP
@@ -15,10 +15,10 @@ services:
       options:
         max-size: "1m"
   sync:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    #image: skullandbonesdao/rogue_api:latest
+    #    build:
+    #      context: .
+    #      dockerfile: Dockerfile
+    image: skullandbonederzwerggimli/staratlas-logger:latest
     restart: unless-stopped
     environment:
       MODE: SYNC
@@ -28,10 +28,10 @@ services:
       options:
         max-size: "1m"
   retry:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    #image: skullandbonesdao/rogue_api:latest
+    #    build:
+    #      context: .
+    #      dockerfile: Dockerfile
+    image: skullandbonederzwerggimli/staratlas-logger:latest
     restart: unless-stopped
     environment:
       MODE: RETRY
