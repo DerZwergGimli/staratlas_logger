@@ -1,14 +1,15 @@
-name: Docker Image CI
-
-on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
-
+name: Publish Docker
+on: [push]
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
+    steps:
+      - uses: philips-software/docker-ci-scripts@v4.5.0
+        with:
+          dockerfile: "./Dockerfile"
+          image-name: "staratlas_logger"
+          tags: "latest"
+        env:
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_TOKEN: "${{ secrets.REGISTRY_TOKEN }}"
+          DOCKER_ORGANIZATION: myDockerOrganization
