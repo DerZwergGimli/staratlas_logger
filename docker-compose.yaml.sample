@@ -5,7 +5,7 @@ services:
 #    build:
 #      context: .
 #      dockerfile: Dockerfile
-    image: skullandbonederzwerggimli/staratlas-logger:latest
+    image: derzwerggimli/staratlas-logger:latest
     restart: unless-stopped
     environment:
       MODE: LOOP
@@ -18,7 +18,7 @@ services:
     #    build:
     #      context: .
     #      dockerfile: Dockerfile
-    image: skullandbonederzwerggimli/staratlas-logger:latest
+    image: derzwerggimli/staratlas-logger:latest
     restart: unless-stopped
     environment:
       MODE: SYNC
@@ -31,7 +31,7 @@ services:
     #    build:
     #      context: .
     #      dockerfile: Dockerfile
-    image: skullandbonederzwerggimli/staratlas-logger:latest
+    image: derzwerggimli/staratlas-logger:latest
     restart: unless-stopped
     environment:
       MODE: RETRY
