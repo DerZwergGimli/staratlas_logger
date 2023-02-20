@@ -56,20 +56,20 @@ console.log('-> Mode: %s', process.env.MODE);
 async function main(): Promise<void> {
   if (process.env.MODE) {
     //INITIALIZATION
-    const client = new Connection('https://solana-mainnet.rpc.extrnode.com');
     connectDB();
 
-    const programm_key = new PublicKey(
-      'traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'
-    );
-    const txParser = new SolanaParser([
-      {
-        idl: getGmIDL(programm_key) as unknown as Idl,
-        programId: programm_key,
-      },
-    ]);
-
     while (true) {
+      const client = new Connection('https://solana-mainnet.rpc.extrnode.com');
+      const programm_key = new PublicKey(
+        'traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'
+      );
+      const txParser = new SolanaParser([
+        {
+          idl: getGmIDL(programm_key) as unknown as Idl,
+          programId: programm_key,
+        },
+      ]);
+
       let signatures = [];
       switch (process.env.MODE) {
         // Fetches old transactions
