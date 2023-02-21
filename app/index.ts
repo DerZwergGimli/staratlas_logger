@@ -123,13 +123,17 @@ async function main(): Promise<void> {
               $limit: 1,
             },
           ]);
-          signatures = await client.getSignaturesForAddress(
-            new PublicKey('traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'),
-            {
-              before: exchange_oldest[0]?.signature,
-              limit: LIMIT,
-            }
-          );
+          signatures = await client
+            .getSignaturesForAddress(
+              new PublicKey('traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'),
+              {
+                before: exchange_oldest[0]?.signature,
+                limit: LIMIT,
+              }
+            )
+            .catch(err => {
+              console.log('error while fetching sig');
+            });
           break;
         // Fetches new transactions
         case 'LOOP':
@@ -143,13 +147,17 @@ async function main(): Promise<void> {
               $limit: 1,
             },
           ]);
-          signatures = await client.getSignaturesForAddress(
-            new PublicKey('traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'),
-            {
-              until: exchange_newest[0]?.signature,
-              limit: LIMIT,
-            }
-          );
+          signatures = await client
+            .getSignaturesForAddress(
+              new PublicKey('traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'),
+              {
+                until: exchange_newest[0]?.signature,
+                limit: LIMIT,
+              }
+            )
+            .catch(err => {
+              console.log('error while fetching sig');
+            });
           break;
         // Retry failed to parse transactions
         case 'RETRY':
@@ -162,8 +170,9 @@ async function main(): Promise<void> {
             {
               $limit: 100,
             },
-          ]);
-
+          ]).catch(err => {
+            console.log('error while fetching sig');
+          });
           break;
       }
 
