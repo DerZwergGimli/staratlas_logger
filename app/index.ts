@@ -51,14 +51,14 @@ function save_trade_to_db(parsed: any, signature: String, timestamp: number) {
   });
 }
 
+let running = true;
 console.log('--- Starting ---');
 console.log('-> Mode: %s', process.env.MODE);
 async function main(): Promise<void> {
   if (process.env.MODE) {
     //INITIALIZATION
     connectDB();
-
-    while (true) {
+    while (running) {
       const client = new Connection('https://solana-mainnet.rpc.extrnode.com');
       const programm_key = new PublicKey(
         'traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'
@@ -141,6 +141,10 @@ async function main(): Promise<void> {
             .parseTransaction(client, signature.signature, true)
             .catch(err => {
               console.log(err);
+              if (err.code == 503) {
+                console.log('closing app');
+                running = false;
+              }
               console.log('Error while signature: %s', signature.signature);
               let parseError = new ParseError({
                 timestamp: signature.blockTime,
