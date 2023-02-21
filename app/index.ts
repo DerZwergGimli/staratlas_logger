@@ -123,7 +123,7 @@ async function main(): Promise<void> {
               $limit: 1,
             },
           ]);
-          signatures = await client
+          await client
             .getSignaturesForAddress(
               new PublicKey('traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'),
               {
@@ -131,6 +131,7 @@ async function main(): Promise<void> {
                 limit: LIMIT,
               }
             )
+            .then(resp => (signatures = resp))
             .catch(err => {
               console.log('error while fetching sig');
             });
@@ -147,7 +148,7 @@ async function main(): Promise<void> {
               $limit: 1,
             },
           ]);
-          signatures = await client
+          await client
             .getSignaturesForAddress(
               new PublicKey('traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'),
               {
@@ -155,6 +156,7 @@ async function main(): Promise<void> {
                 limit: LIMIT,
               }
             )
+            .then(resp => (signatures = resp))
             .catch(err => {
               console.log('error while fetching sig');
             });
@@ -170,9 +172,7 @@ async function main(): Promise<void> {
             {
               $limit: 100,
             },
-          ]).catch(err => {
-            console.log('error while fetching sig');
-          });
+          ]);
           break;
       }
 
