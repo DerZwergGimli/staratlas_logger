@@ -65,6 +65,7 @@ function save_trade_to_db(
       });
       exchange.save().catch(err => {
         if (!(err.code == 11000)) {
+          console.log('Error while saving to db');
           console.log(err);
         }
       });
@@ -88,12 +89,12 @@ async function main(): Promise<void> {
         .then(res => res.json())
         .then(json => (staratlasapi = json))
         .catch(err => {
-          console.error('Error while fetching API');
+          console.log('Error while fetching API');
           console.log(err);
         });
 
       if (staratlasapi.length == 0) {
-        console.error('Unable to fetch api');
+        console.log('Unable to fetch api');
         running = false;
         break;
       }
@@ -189,12 +190,12 @@ async function main(): Promise<void> {
             .parseTransaction(client, signature.signature, true)
             .catch(err => {
               console.log(err);
-              console.error('Code %s', err.code.toString());
+              console.log('Code %s', err.code.toString());
               if (err.code == 503 || err.code == 'ERR_SOCKET_TIMEOUT') {
-                console.error('closing app');
+                console.log('closing app');
                 running = false;
               }
-              console.error('Error while signature: %s', signature.signature);
+              console.log('Error while signature: %s', signature.signature);
               let parseError = new ParseError({
                 timestamp: signature.blockTime,
                 signature: signature.signature,
@@ -203,7 +204,7 @@ async function main(): Promise<void> {
               parseError.save().catch(err => {
                 if (!(err.code == 11000)) {
                   console.log('DB Error');
-                  console.error(err);
+                  console.log(err);
                 }
               });
             });
