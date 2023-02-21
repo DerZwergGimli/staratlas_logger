@@ -141,7 +141,7 @@ async function main(): Promise<void> {
             .parseTransaction(client, signature.signature, true)
             .catch(err => {
               console.log(err);
-              if (err.code == 503) {
+              if (err.code == 503 || err.code == 'ERR_SOCKET_TIMEOUT') {
                 console.log('closing app');
                 running = false;
               }
