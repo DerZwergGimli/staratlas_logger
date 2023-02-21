@@ -5,6 +5,7 @@
   "main": "app/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc",
     "app": "npx tsc && node dist/index.js"
   },
   "keywords": [],

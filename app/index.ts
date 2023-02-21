@@ -42,7 +42,20 @@ function save_trade_to_db(
           .find((account: any) => account.name == 'orderInitializer')
           .pubkey.toString(),
         size: p.args.purchaseQuantity.toNumber(),
-        price: p.args.expectedPrice.toString() * Math.pow(10, -8),
+        price:
+          p.args.expectedPrice.toString() *
+          Math.pow(
+            10,
+            -(
+              currencies.find(
+                currency =>
+                  currency.mint ===
+                  p.accounts
+                    .find((account: any) => account.name === 'currencyMint')
+                    .pubkey.toString()
+              )?.decimals ?? 0
+            )
+          ),
         cost:
           p.args.expectedPrice.toString() *
           p.args.purchaseQuantity.toString() *
@@ -95,134 +108,132 @@ async function main(): Promise<void> {
 
     if (staratlasapi.length == 0) {
       console.log('Unable to fetch api');
-      running = false;
-      break;
-    }
-
-    const client = new Connection('https://solana-mainnet.rpc.extrnode.com');
-    const programm_key = new PublicKey(
-      'traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'
-    );
-    const txParser = new SolanaParser([
-      {
-        idl: getGmIDL(programm_key) as unknown as Idl,
-        programId: programm_key,
-      },
-    ]);
-
-    let signatures = [];
-    switch (process.env.MODE) {
-      // Fetches old transactions
-      case 'SYNC':
-        let exchange_oldest = await Exchange.aggregate([
-          {
-            $sort: {
-              timestamp: 1,
-            },
-          },
-          {
-            $limit: 1,
-          },
-        ]);
-        await client
-          .getSignaturesForAddress(
-            new PublicKey('traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'),
-            {
-              before: exchange_oldest[0]?.signature,
-              limit: LIMIT,
-            }
-          )
-          .then(resp => (signatures = resp))
-          .catch(err => {
-            console.log('error while fetching sig');
-          });
-        break;
-      // Fetches new transactions
-      case 'LOOP':
-        let exchange_newest = await Exchange.aggregate([
-          {
-            $sort: {
-              timestamp: -1,
-            },
-          },
-          {
-            $limit: 1,
-          },
-        ]);
-        await client
-          .getSignaturesForAddress(
-            new PublicKey('traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'),
-            {
-              until: exchange_newest[0]?.signature,
-              limit: LIMIT,
-            }
-          )
-          .then(resp => (signatures = resp))
-          .catch(err => {
-            console.log('error while fetching sig');
-          });
-        break;
-      // Retry failed to parse transactions
-      case 'RETRY':
-        signatures = await ParseError.aggregate([
-          {
-            $sort: {
-              timestamp: 1,
-            },
-          },
-          {
-            $limit: 100,
-          },
-        ]);
-        break;
-    }
-
-    if (signatures.length > 0) {
-      console.log(
-        'Staring with: %s at %i',
-        signatures[0].signature,
-        signatures[0]?.timestamp | signatures[0]?.blockTime
+    } else {
+      const client = new Connection('https://solana-mainnet.rpc.extrnode.com');
+      const programm_key = new PublicKey(
+        'traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'
       );
-      console.log('Got %i of %i', signatures.length, LIMIT);
-      for (const signature of signatures) {
-        let is_failed = false;
-        const parsed = await txParser
-          .parseTransaction(client, signature.signature, true)
-          .catch(err => {
-            console.log(err);
-            console.log('Code %s', err.code.toString());
-            if (err.code == 503 || err.code == 'ERR_SOCKET_TIMEOUT') {
-              console.log('closing app');
-              running = false;
-            }
-            console.log('Error while signature: %s', signature.signature);
-            let parseError = new ParseError({
-              timestamp: signature.blockTime,
-              signature: signature.signature,
-            });
-            is_failed = true;
-            parseError.save().catch(err => {
-              if (!(err.code == 11000)) {
-                console.log('DB Error');
-                console.log(err);
-              }
-            });
-          });
+      const txParser = new SolanaParser([
+        {
+          idl: getGmIDL(programm_key) as unknown as Idl,
+          programId: programm_key,
+        },
+      ]);
 
-        if (!is_failed) {
-          save_trade_to_db(
-            parsed,
-            signature.signature,
-            signature.blockTime ?? 0,
-            staratlasapi
-          );
-        }
-        await sleep(1000);
+      let signatures = [];
+      switch (process.env.MODE) {
+        // Fetches old transactions
+        case 'SYNC':
+          let exchange_oldest = await Exchange.aggregate([
+            {
+              $sort: {
+                timestamp: 1,
+              },
+            },
+            {
+              $limit: 1,
+            },
+          ]);
+          await client
+            .getSignaturesForAddress(
+              new PublicKey('traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'),
+              {
+                before: exchange_oldest[0]?.signature,
+                limit: LIMIT,
+              }
+            )
+            .then(resp => (signatures = resp))
+            .catch(err => {
+              console.log('error while fetching sig');
+            });
+          break;
+        // Fetches new transactions
+        case 'LOOP':
+          let exchange_newest = await Exchange.aggregate([
+            {
+              $sort: {
+                timestamp: -1,
+              },
+            },
+            {
+              $limit: 1,
+            },
+          ]);
+          await client
+            .getSignaturesForAddress(
+              new PublicKey('traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'),
+              {
+                until: exchange_newest[0]?.signature,
+                limit: LIMIT,
+              }
+            )
+            .then(resp => (signatures = resp))
+            .catch(err => {
+              console.log('error while fetching sig');
+            });
+          break;
+        // Retry failed to parse transactions
+        case 'RETRY':
+          signatures = await ParseError.aggregate([
+            {
+              $sort: {
+                timestamp: 1,
+              },
+            },
+            {
+              $limit: 100,
+            },
+          ]);
+          break;
       }
+
+      if (signatures.length > 0) {
+        console.log(
+          'Staring with: %s at %i',
+          signatures[0].signature,
+          signatures[0]?.timestamp | signatures[0]?.blockTime
+        );
+        console.log('Got %i of %i', signatures.length, LIMIT);
+        for (const signature of signatures) {
+          let is_failed = false;
+          const parsed = await txParser
+            .parseTransaction(client, signature.signature, true)
+            .catch(err => {
+              console.log(err);
+              console.log('Code %s', err.code.toString());
+              if (err.code == 503 || err.code == 'ERR_SOCKET_TIMEOUT') {
+                console.log('closing app');
+                running = false;
+              }
+              console.log('Error while signature: %s', signature.signature);
+              let parseError = new ParseError({
+                timestamp: signature.blockTime,
+                signature: signature.signature,
+              });
+              is_failed = true;
+              parseError.save().catch(err => {
+                if (!(err.code == 11000)) {
+                  console.log('DB Error');
+                  console.log(err);
+                }
+              });
+            });
+
+          if (!is_failed) {
+            save_trade_to_db(
+              parsed,
+              signature.signature,
+              signature.blockTime ?? 0,
+              staratlasapi
+            );
+          }
+          await sleep(1000);
+        }
+      }
+      await sleep(3000);
     }
-    await sleep(3000);
+    disconnectDB();
   }
-  disconnectDB();
 }
 
 main()
