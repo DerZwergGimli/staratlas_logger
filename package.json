@@ -16,8 +16,10 @@
     "@solana/web3.js": "^1.73.2",
     "@sonarwatch/solana-transaction-parser": "^1.0.2",
     "@staratlas/factory": "^0.4.4",
+    "@types/node-fetch": "^2.6.2",
     "bn.js": "^4.5.2",
     "mongoose": "^6.9.2",
+    "node-fetch": "^2.6.9",
     "prettier": "^2.8.4"
   },
   "devDependencies": {

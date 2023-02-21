@@ -8,6 +8,7 @@ import * as process from 'process';
 import { ParseError } from './ParseErrorSchema';
 import { StarAtlasNFT } from './staratlasnft';
 import { get_Currenties } from './currencies';
+import fetch from 'node-fetch';
 
 const LIMIT = 100;
 
@@ -83,7 +84,7 @@ async function main(): Promise<void> {
     while (running) {
       let staratlasapi: Array<StarAtlasNFT> = [];
 
-      fetch('https://galaxy.staratlas.com/nfts')
+      await fetch('https://galaxy.staratlas.com/nfts')
         .then(res => res.json())
         .then(json => (staratlasapi = json));
 
