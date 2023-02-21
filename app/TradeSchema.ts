@@ -10,6 +10,7 @@ const exchangeSchema = new Schema({
   size: Number,
   price: Number,
   cost: Number,
+  pair: String,
 });
 
 export const Exchange = mongoose.model('Exchange', exchangeSchema, 'Exchange');

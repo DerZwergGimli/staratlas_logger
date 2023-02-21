@@ -2,12 +2,12 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { getGmIDL } from '@staratlas/factory';
 import { Idl } from '@project-serum/anchor';
 import { SolanaParser } from '@shyft.to/solana-transaction-parser';
-
-//import { SolanaParser } from '@sonarwatch/solana-transaction-parser';
 import { connectDB, disconnectDB } from './database';
 import { Exchange } from './TradeSchema';
 import * as process from 'process';
 import { ParseError } from './ParseErrorSchema';
+import { StarAtlasNFT } from './staratlasnft';
+import { get_Currenties } from './currencies';
 
 const LIMIT = 100;
 
@@ -15,7 +15,12 @@ function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function save_trade_to_db(parsed: any, signature: String, timestamp: number) {
+function save_trade_to_db(
+  parsed: any,
+  signature: String,
+  timestamp: number,
+  staratlasapi: StarAtlasNFT[]
+) {
   parsed?.forEach((p: any) => {
     if (p.name == 'processExchange') {
       let exchange = new Exchange({
@@ -39,6 +44,23 @@ function save_trade_to_db(parsed: any, signature: String, timestamp: number) {
           p.args.expectedPrice.toString() *
           p.args.purchaseQuantity.toString() *
           Math.pow(10, -8),
+        pair:
+          staratlasapi.find(
+            nft =>
+              nft.mint ===
+              p.accounts
+                .find((account: any) => account.name == 'assetMint')
+                .pubkey.toString()
+          )?.symbol ??
+          'none' +
+            get_Currenties().find(
+              currency =>
+                currency.mint ==
+                p.accounts
+                  .find((account: any) => account.name == 'currencyMint')
+                  .pubkey.toString()
+            )?.name ??
+          'none',
       });
       exchange.save().catch(err => {
         if (!(err.code == 11000)) {
@@ -59,6 +81,18 @@ async function main(): Promise<void> {
     //INITIALIZATION
     connectDB();
     while (running) {
+      let staratlasapi: Array<StarAtlasNFT> = [];
+
+      fetch('https://galaxy.staratlas.com/nfts')
+        .then(res => res.json())
+        .then(json => (staratlasapi = json));
+
+      if (staratlasapi.length == 0) {
+        console.error('Unable to fetch api');
+        running = false;
+        break;
+      }
+
       const client = new Connection('https://solana-mainnet.rpc.extrnode.com');
       const programm_key = new PublicKey(
         'traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'
@@ -163,7 +197,8 @@ async function main(): Promise<void> {
             save_trade_to_db(
               parsed,
               signature.signature,
-              signature.blockTime ?? 0
+              signature.blockTime ?? 0,
+              staratlasapi
             );
           }
           await sleep(1000);
