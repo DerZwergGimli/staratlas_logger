@@ -3,7 +3,7 @@ export interface I_Currency {
   mint: String;
 }
 
-export function get_Currenties(): Array<I_Currency> {
+export function get_Currencies(): Array<I_Currency> {
   return [
     {
       name: 'USDC',

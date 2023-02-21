@@ -7,7 +7,7 @@ import { Exchange } from './TradeSchema';
 import * as process from 'process';
 import { ParseError } from './ParseErrorSchema';
 import { StarAtlasNFT } from './staratlasnft';
-import { get_Currenties } from './currencies';
+import { get_Currencies } from './currencies';
 import fetch from 'node-fetch';
 
 const LIMIT = 100;
@@ -22,6 +22,8 @@ function save_trade_to_db(
   timestamp: number,
   staratlasapi: StarAtlasNFT[]
 ) {
+  const currencies = get_Currencies();
+
   parsed?.forEach((p: any) => {
     if (p.name == 'processExchange') {
       let exchange = new Exchange({
@@ -46,22 +48,20 @@ function save_trade_to_db(
           p.args.purchaseQuantity.toString() *
           Math.pow(10, -8),
         pair:
-          staratlasapi.find(
+          (staratlasapi.find(
             nft =>
               nft.mint ===
               p.accounts
-                .find((account: any) => account.name == 'assetMint')
+                .find((account: any) => account.name === 'assetMint')
                 .pubkey.toString()
-          )?.symbol ??
-          'none' +
-            get_Currenties().find(
-              currency =>
-                currency.mint ==
-                p.accounts
-                  .find((account: any) => account.name == 'currencyMint')
-                  .pubkey.toString()
-            )?.name ??
-          'none',
+          )?.symbol ?? 'error') +
+          currencies.find(
+            currency =>
+              currency.mint ===
+              p.accounts
+                .find((account: any) => account.name === 'currencyMint')
+                .pubkey.toString()
+          )?.name,
       });
       exchange.save().catch(err => {
         if (!(err.code == 11000)) {
