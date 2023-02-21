@@ -86,7 +86,11 @@ async function main(): Promise<void> {
 
       await fetch('https://galaxy.staratlas.com/nfts')
         .then(res => res.json())
-        .then(json => (staratlasapi = json));
+        .then(json => (staratlasapi = json))
+        .catch(err => {
+          console.error('Error while fetching API');
+          console.log(err);
+        });
 
       if (staratlasapi.length == 0) {
         console.error('Unable to fetch api');
@@ -175,13 +179,13 @@ async function main(): Promise<void> {
           const parsed = await txParser
             .parseTransaction(client, signature.signature, true)
             .catch(err => {
-              console.error(err);
-              console.log('Code %s', err.code.toString());
+              console.log(err);
+              console.error('Code %s', err.code.toString());
               if (err.code == 503 || err.code == 'ERR_SOCKET_TIMEOUT') {
-                console.log('closing app');
+                console.error('closing app');
                 running = false;
               }
-              console.log('Error while signature: %s', signature.signature);
+              console.error('Error while signature: %s', signature.signature);
               let parseError = new ParseError({
                 timestamp: signature.blockTime,
                 signature: signature.signature,
@@ -189,7 +193,8 @@ async function main(): Promise<void> {
               is_failed = true;
               parseError.save().catch(err => {
                 if (!(err.code == 11000)) {
-                  console.log(err);
+                  console.log('DB Error');
+                  console.error(err);
                 }
               });
             });
