@@ -140,7 +140,8 @@ async function main(): Promise<void> {
           const parsed = await txParser
             .parseTransaction(client, signature.signature, true)
             .catch(err => {
-              console.log(err);
+              console.error(err);
+              console.log('Code %s', err.code.toString());
               if (err.code == 503 || err.code == 'ERR_SOCKET_TIMEOUT') {
                 console.log('closing app');
                 running = false;
