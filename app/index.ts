@@ -205,6 +205,7 @@ async function main(): Promise<void> {
                 signature.blockTime ?? 0,
                 staratlasapi
               );
+              await sleep(500);
             })
             .catch(err => {
               console.log(err);
