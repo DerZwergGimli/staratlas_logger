@@ -198,7 +198,7 @@ async function main(): Promise<void> {
           let is_failed = false;
           await txParser
             .parseTransaction(client, signature.signature, true)
-            .then(parsed => {
+            .then(async parsed => {
               save_trade_to_db(
                 parsed,
                 signature.signature,
