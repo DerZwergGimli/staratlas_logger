@@ -10,7 +10,7 @@ import { StarAtlasNFT } from './staratlasnft';
 import { get_Currencies } from './currencies';
 import fetch from 'node-fetch';
 
-const LIMIT = 100;
+const LIMIT = process.env.LIMIT ?? 100;
 
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
