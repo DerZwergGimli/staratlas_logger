@@ -94,7 +94,7 @@ console.log('-> Mode: %s', process.env.MODE);
 async function main(): Promise<void> {
   if (process.env.MODE) {
     //INITIALIZATION
-    connectDB();
+    await connectDB();
 
     let staratlasapi: Array<StarAtlasNFT> = [];
 

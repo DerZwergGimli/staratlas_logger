@@ -2,14 +2,14 @@ import mongoose from 'mongoose';
 import * as process from 'process';
 
 let database: mongoose.Connection;
-export const connectDB = () => {
+export const connectDB = async () => {
   if (process.env.MONGOURL) {
     // add your own uri below
     const uri = process.env.MONGOURL;
     if (database) {
       return;
     }
-    mongoose.connect(uri);
+    await mongoose.connect(uri);
     database = mongoose.connection;
     database.once('open', async () => {
       console.log('Connected to database');
