@@ -196,8 +196,16 @@ async function main(): Promise<void> {
         console.log('Got %i of %i', signatures.length, LIMIT);
         for (const signature of signatures) {
           let is_failed = false;
-          const parsed = await txParser
+          await txParser
             .parseTransaction(client, signature.signature, true)
+            .then(parsed => {
+              save_trade_to_db(
+                parsed,
+                signature.signature,
+                signature.blockTime ?? 0,
+                staratlasapi
+              );
+            })
             .catch(err => {
               console.log(err);
               console.log('Code %s', err.code.toString());
@@ -218,21 +226,10 @@ async function main(): Promise<void> {
                 }
               });
             });
-
-          if (!is_failed) {
-            save_trade_to_db(
-              parsed,
-              signature.signature,
-              signature.blockTime ?? 0,
-              staratlasapi
-            );
-          }
-          await sleep(1000);
         }
       }
       await sleep(3000);
     }
-    disconnectDB();
   }
 }
 
@@ -240,4 +237,8 @@ main()
   .then(() => {
     console.log('--- END ---');
   })
-  .catch(err => console.log(err));
+  .catch(err => {
+    console.log('global error catch');
+    console.log(err);
+  })
+  .finally(() => disconnectDB());
