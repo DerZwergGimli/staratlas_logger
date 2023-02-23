@@ -32,6 +32,7 @@ export async function fetch_sa_assets(): Promise<Array<StarAtlasNFT>> {
 export async function init_worker_and_get_from_db(
   client: Connection
 ): Promise<Array<any>> {
+  console.log('Init parser...');
   const LIMIT = parseInt(process.env.LIMIT ?? '100');
   let signatures = [];
 
@@ -164,7 +165,7 @@ function save_trade_to_db(
 ) {
   const currencies = get_Currencies();
 
-  parsed?.forEach((p: any) => {
+  parsed?.forEach(async (p: any) => {
     if (p.name == 'processExchange') {
       let exchange = new Exchange({
         timestamp: timestamp,
@@ -228,6 +229,7 @@ function save_trade_to_db(
     } else {
       process.stdout.write('.');
     }
+    await sleep(500);
   });
 }
 
