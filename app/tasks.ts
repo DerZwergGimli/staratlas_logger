@@ -151,6 +151,8 @@ export async function fetch_and_parse_signatures(
           });
         });
     }
+  } else {
+    console.log('Signatures array is empty');
   }
 }
 
@@ -214,14 +216,15 @@ function save_trade_to_db(
                 .pubkey.toString()
           )?.name,
       });
-      exchange.save().catch(err => {
-        if (!(err.code == 11000)) {
-          console.log('Error while saving to db');
-          console.log(err);
-        }
-      });
-
-      console.log('processExchange [saved]');
+      exchange
+        .save()
+        .then(() => console.log('processExchange [saved]'))
+        .catch(err => {
+          if (!(err.code == 11000)) {
+            console.log('Error while saving to db');
+            console.log(err);
+          }
+        });
     }
   });
 }

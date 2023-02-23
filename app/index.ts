@@ -47,6 +47,7 @@ async function main(): Promise<void> {
         },
       ]);
       let db_entry = await init_worker_and_get_from_db(client);
+      console.log(db_entry[0]);
 
       await fetch_and_parse_signatures(
         client,
@@ -55,7 +56,7 @@ async function main(): Promise<void> {
         db_entry
       );
     }
-
+    disconnectDB();
     await sleep(3000);
   } else {
     console.log('Please set a MODE env');
