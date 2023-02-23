@@ -12,6 +12,7 @@ export const connectDB = () => {
   if (process.env.MONGOURL) {
     // add your own uri below
     const uri = process.env.MONGOURL;
+    console.log(uri);
     if (database) {
       return;
     }
