@@ -28,7 +28,7 @@ async function main(): Promise<void> {
 
     //Check if db is connected
     while (!is_db_connected()) {
-      console.log('.');
+      process.stdout.write('.');
       await sleep(1000);
     }
 

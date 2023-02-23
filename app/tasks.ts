@@ -225,6 +225,8 @@ function save_trade_to_db(
             console.log(err);
           }
         });
+    } else {
+      process.stdout.write('.');
     }
   });
 }
