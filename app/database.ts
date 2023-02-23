@@ -16,7 +16,7 @@ export const connectDB = () => {
     if (database) {
       return;
     }
-    mongoose.set('strictQuery', true);
+    //mongoose.set('strictQuery', false);
     mongoose.connect(uri);
 
     database = mongoose.connection;

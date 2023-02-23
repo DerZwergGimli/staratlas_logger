@@ -49,6 +49,7 @@ export async function init_worker_and_get_from_db(
           $limit: 1,
         },
       ]);
+      console.log(exchange_oldest[0]);
       await client
         .getSignaturesForAddress(
           new PublicKey('traderDnaR5w6Tcoi3NFm53i48FTDNbGjBSZwWXDRrg'),
